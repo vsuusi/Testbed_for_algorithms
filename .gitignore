@@ -1,7 +1,7 @@
 # ignore all
 *
 
-#
+# unignore all files with following extensions
 !*.gitignore
 
 !*.cpp

@@ -6,16 +6,24 @@
 
 using namespace std;
 
+enum
+{
+    keySuccess = 0,
+    keyFailure = -1,
+    funcFailure = 2,
+};
     // function to measure time by calling it at start and end of 
-    // code you want to measure
+    // snipept of code you want to measure
 void getDuration(chrono::steady_clock::time_point start,
                     chrono::steady_clock::time_point end) 
 {
-    double duration = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-    cout << "Elapsed time: " << duration << "ms" << endl;
+    double duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+    int millisecs = round(duration/1000);
+    cout << "Elapsed time: " << duration << " microseconds or " 
+         << millisecs << " milliseconds (rounded to 1)." << endl;
 }
-    // searchType: 1 = sequential, 2 = binary
-void searchFunction(int dataSize, int key, int searchType)
+
+int searchFunction(int dataSize, int key, int searchType)
 {
     // generate data
     vector<int> data(dataSize);
@@ -23,33 +31,87 @@ void searchFunction(int dataSize, int key, int searchType)
         data[i] = 2*i + 1;
     }
 
-    // hop inside of scope depending on searchtype
+    // hop inside of sequential search scope
     if (searchType == 1)
     {
-        // start measuring time for sequential search
-        auto startSequential = chrono::steady_clock::now(); 
-
         // search for the key
-        bool keyIsFound = false;
-        int index;
         for(int i = 0; i <data.size(); i++){
-            index = 2*i + 1;
             if (data[i] == key)
             {
-                keyIsFound = true;
-                cout << "Success! The key is: " << key << endl
-                    << "The index of the key in list is: " << i << endl;
+                return i+1;
             }
         }
-        if (keyIsFound == false){
-            cout << "The key was not found in the list." << endl;
+        return keyFailure; // key not found
+    }
+
+    // hop inside of binary search scope
+    if (searchType == 2)
+    {
+        int left = 0;
+        int right = data.size() - 1;
+        bool keyIsFound = false;
+        while (left <= right) 
+        {
+            int mid = (left + right) / 2;
+            if (data[mid] == key) {
+                return mid + 1;
+            } 
+            else if (data[mid] < key) {
+                left = mid + 1;
+            } 
+            else {
+                right = mid - 1;
+            }
         }
-        // stop measuring time for sequential search
-        auto endSequential = chrono::steady_clock::now(); 
-        // calculate and print time of algorithm
-        getDuration(startSequential, endSequential); 
+        return keyFailure;
+        
+    }
+    return funcFailure;
+}
+
+
+    // function for comparing search algorithms
+void compare_search_algorithms(int dataSize, int num_repetitions) 
+{
+    // Initialize random seed
+    srand(time(nullptr));
+
+    for (int i = 0; i < num_repetitions; i++) {
+        
+        int key = rand() % dataSize + 1; // Generate random key
+
+        // sequential search
+        auto startSeq = chrono::steady_clock::now();
+        int seq_status = searchFunction(dataSize, key, 1);
+        auto endSeq = chrono::steady_clock::now();
+        auto timeSeq = chrono::duration_cast<chrono::microseconds>(endSeq - startSeq).count();
+
+        // binary search
+        int bin_status = searchFunction(dataSize,key, 2);
+        /*auto startBin = chrono::steady_clock::now();
+        int bin_index = binary_search(data, key);
+        auto endBin = chrono::steady_clock::now();
+        int bin_comparisons = bin_index + 1;
+        auto bin_time = chrono::duration_cast<chrono::microseconds>(endBin - startBin).count(); */
+
+        cout << "Search #" << i+1 << " with key " << key << ":" << endl;
+        cout << "\nSequential:\nStatus: " << seq_status << endl;
+        cout << "Time elapsed: " << timeSeq << endl;
+        cout << "\n";
+        cout << "--------------------------------------";
+        
+        /*
+        status
+        elapsed per search
+        comparisions
+        searches
+        */
     }
 }
+
+
+    /*--------------------------- SORTING FUNCTIONS -----------------------------*/
+
 
     // function to help print vector data types
 void printVector(const vector<int>& vec, int size) 
@@ -79,7 +141,6 @@ void sortWithInsertionSort(int dataSize, int printSize, bool printAll)
         printVector(data, printSize);
     }
 
-    auto start = chrono::steady_clock::now(); // start measuring time
     for (int i = 1; i < data.size(); ++i) {
         int j = i;
         while (j > 0 && data[j-1] > data[j]) {
@@ -87,7 +148,6 @@ void sortWithInsertionSort(int dataSize, int printSize, bool printAll)
             j--;
         }
     }
-    auto end = chrono::steady_clock::now(); // stop measuring time
 
     cout << "After sorting:" << endl;
     if (printAll) {
@@ -95,7 +155,6 @@ void sortWithInsertionSort(int dataSize, int printSize, bool printAll)
     } else {
         printVector(data, printSize);
     }
-    getDuration(start, end); // calculate and print time of algorithm
 }
 
     // swap positions of two elements in an array
@@ -187,12 +246,54 @@ void group1()
     cout << "Enter the key: ";
     cin >> key; 
 
+    auto start = chrono::steady_clock::now(); 
+
     const int searchType = 1;
-    searchFunction(dataSize, key, searchType);
+    int result = searchFunction(dataSize, key, searchType);
+    cout << "debug:result: " << result << endl;
+    if (result != keyFailure)
+    {
+        cout << "Success! The key is: " << key
+             << "\nThe location of the key in the list is: " << result << endl;
+    }
+    else{
+        cout << "Failure! The key was not on the list" << endl;
+    }
+    auto end = chrono::steady_clock::now();
+    getDuration(start, end);
 }
+
 void group2()
 {
+    int dataSize, key;
+    cout << "Enter the size of data to be searched: ";
+    cin >> dataSize;
 
+    char response;
+    cout << "Do performance comparition to group 1? (y/n): ";
+    cin >> response;
+
+    if (response == 'y' || response == 'Y') {
+        compare_search_algorithms(dataSize, 10); //second parameter is number of comparitions
+    } 
+    else {
+        cout << "Enter the key: ";
+        cin >> key;
+
+        const int searchType = 2;
+        auto start = chrono::steady_clock::now();
+        int result = searchFunction(dataSize, key, searchType);
+        if (result != keyFailure)
+    {
+        cout << "Success! The key is: " << key
+             << "\nThe location of the key in the list is: " << result << endl;
+    }
+    else{
+        cout << "Failure! The key was not on the list" << endl;
+    }
+        auto end = chrono::steady_clock::now(); 
+        getDuration(start, end);
+    }    
 }
 
 void group3()
@@ -216,8 +317,10 @@ void group3()
     } else {
         printAll = false;
     }
-
+    auto start = chrono::steady_clock::now(); // start measuring time
     sortWithInsertionSort(dataSize, printSize, printAll);
+    auto end = chrono::steady_clock::now(); // stop measuring time
+    getDuration(start, end); // calculate and print time of algorithm
 }
 
 void group4()
