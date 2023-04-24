@@ -3,6 +3,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
+#include <string>
 
 using namespace std;
 
@@ -20,16 +21,16 @@ void getDuration(chrono::steady_clock::time_point start,
     double duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
     int millisecs = round(duration/1000);
     cout << "Elapsed time: " << duration << " microseconds or " 
-         << millisecs << " milliseconds (rounded to 1)." << endl;
+         << millisecs << " milliseconds (rounded)." << endl;
 }
-
 int searchFunction(int dataSize, int key, int searchType)
 {
-    // generate data
+// generate data
     vector<int> data(dataSize);
     for (int i = 0; i < dataSize; i++) {
         data[i] = 2*i + 1;
     }
+    int comparisions = 0;
 
     // hop inside of sequential search scope
     if (searchType == 1)
@@ -49,10 +50,56 @@ int searchFunction(int dataSize, int key, int searchType)
     {
         int left = 0;
         int right = data.size() - 1;
-        bool keyIsFound = false;
         while (left <= right) 
         {
             int mid = (left + right) / 2;
+            if (data[mid] == key) {
+                return mid + 1;
+            } 
+            else if (data[mid] < key) {
+                left = mid + 1;
+            } 
+            else {
+                right = mid - 1;
+            }
+        }
+        return keyFailure;
+        
+    }
+    return funcFailure;
+}
+    //overload
+int searchFunction(int dataSize, int key, int searchType, int& comparisions)
+{
+    // generate data
+    vector<int> data(dataSize);
+    for (int i = 0; i < dataSize; i++) {
+        data[i] = 2*i + 1;
+    }
+
+    // hop inside of sequential search scope
+    if (searchType == 1)
+    {
+        // search for the key
+        for(int i = 0; i <data.size(); i++){
+            comparisions++;
+            if (data[i] == key)
+            {
+                return i+1;
+            }
+        }
+        return keyFailure; // key not found
+    }
+
+    // hop inside of binary search scope
+    if (searchType == 2)
+    {
+        int left = 0;
+        int right = data.size() - 1;
+        while (left <= right) 
+        {
+            int mid = (left + right) / 2;
+            comparisions++;
             if (data[mid] == key) {
                 return mid + 1;
             } 
@@ -76,36 +123,53 @@ void compare_search_algorithms(int dataSize, int num_repetitions)
     // Initialize random seed
     srand(time(nullptr));
 
+    int totalSeqComparisons = 0;
+    int totalBinComparisons = 0;
+
     for (int i = 0; i < num_repetitions; i++) {
         
         int key = rand() % dataSize + 1; // Generate random key
 
+        int seq_comparisons = 0;
+        int bin_comparisons = 0;
+
         // sequential search
         auto startSeq = chrono::steady_clock::now();
-        int seq_status = searchFunction(dataSize, key, 1);
+        int seq_status = searchFunction(dataSize, key, 1, seq_comparisons);
+        string seq_status_char;
+        if (seq_status != -1){
+            seq_status_char = "Success";
+        }
+        else seq_status_char = "Failure";
+        totalSeqComparisons += seq_comparisons;
         auto endSeq = chrono::steady_clock::now();
         auto timeSeq = chrono::duration_cast<chrono::microseconds>(endSeq - startSeq).count();
 
         // binary search
-        int bin_status = searchFunction(dataSize,key, 2);
-        /*auto startBin = chrono::steady_clock::now();
-        int bin_index = binary_search(data, key);
+        auto startBin = chrono::steady_clock::now();
+        int bin_status = searchFunction(dataSize,key, 2, bin_comparisons);
+        string bin_status_char;
+        if (bin_status != -1){
+            bin_status_char = "Success";
+        }
+        else bin_status_char = "Failure";
+        totalBinComparisons += bin_comparisons;
         auto endBin = chrono::steady_clock::now();
-        int bin_comparisons = bin_index + 1;
-        auto bin_time = chrono::duration_cast<chrono::microseconds>(endBin - startBin).count(); */
-
-        cout << "Search #" << i+1 << " with key " << key << ":" << endl;
-        cout << "\nSequential:\nStatus: " << seq_status << endl;
-        cout << "Time elapsed: " << timeSeq << endl;
-        cout << "\n";
-        cout << "--------------------------------------";
+        auto timeBin = chrono::duration_cast<chrono::microseconds>(endBin - startBin).count();
         
-        /*
-        status
-        elapsed per search
-        comparisions
-        searches
-        */
+      /*  int bin_index = binary_search(data, key);
+        int bin_comparisons = bin_index + 1; */
+        
+        cout << "\nSearch #" << i+1 << " with key " << key << ":" << endl;
+        cout << "--------------------------------------" << endl;
+
+        cout << "Sequential:\nStatus: " << seq_status_char << endl;
+        cout << "Time elapsed: " << timeSeq << " microseconds" << endl;
+        cout << "Comparisions: " << seq_comparisons << endl;
+
+        cout << "Binary:\nStatus: " << bin_status_char << endl;
+        cout << "Time elapsed: " << timeBin << " microseconds" << endl;
+        cout << "Comparisions: " << bin_comparisons << endl;
     }
 }
 
