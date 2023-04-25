@@ -396,13 +396,13 @@ void compare_sort_algorithms(vector<int> &arr, int alg1, int alg2)
 
         cout << "Data amount: " << arr.size() << endl;
         cout << algname1 << ": " << endl;
-        cout << "Time elapsed: " << time1 << " microseconds or"
-             << time1/1000 << "milliseconds" << endl;
+        cout << "Time elapsed: " << time1 << " microseconds or "
+             << time1/1000 << " milliseconds" << endl;
         cout << "Comparisions: " << compare1 << endl;
 
         cout << algname2 << ": " << endl;
-        cout << "Time elapsed: " << time2 << " microseconds or"
-             << time2/1000 << "milliseconds" << endl;
+        cout << "Time elapsed: " << time2 << " microseconds or " 
+             << time2/1000 << " milliseconds" << endl;
         cout << "Comparisions: " << compare2 << endl;
 
 }
@@ -457,9 +457,17 @@ void group1()
     int dataSize, key;
     cout << "Enter the size of data to be searched: ";
     cin >> dataSize;
+    if (dataSize <= 0){
+        cout << "False data size. Please provide a number greater than 0" << endl;
+        return;
+    }
 
     cout << "Enter the key: ";
     cin >> key; 
+    if (key > dataSize*2){
+        cout << "False key size. Please provide a key size that is on range of data." << endl;
+        return;
+    }
 
     auto start = chrono::steady_clock::now(); 
 
@@ -483,9 +491,13 @@ void group2()
     int dataSize, key;
     cout << "Enter the size of data to be searched: ";
     cin >> dataSize;
+    if (dataSize <= 0){
+        cout << "False data size. Please provide a number greater than 0" << endl;
+        return;
+    }
 
     char response;
-    cout << "Do performance comparition to group 1? (y/n): ";
+    cout << "Do performance comparision to group 1? (y/n): ";
     cin >> response;
 
     if (response == 'y' || response == 'Y') {
@@ -494,6 +506,10 @@ void group2()
     else {
         cout << "Enter the key: ";
         cin >> key;
+        if (key > dataSize*2){
+        cout << "False key size. Please provide a key size that is on range of data." << endl;
+        return;
+    }
 
         const int searchType = 2;
         auto start = chrono::steady_clock::now();
@@ -517,9 +533,17 @@ void group3()
     int dataSize, printSize;
     cout << "Enter the size of data to be sorted: ";
     cin >> dataSize; 
-    
+    if (dataSize <= 0){
+        cout << "False data size. Please provide a number greater than 0" << endl;
+        return;
+    }
+
     cout << "Enter the number of items to be printed before and after sorting: ";
     cin >> printSize; 
+    if (printSize > dataSize){
+        cout << "False print size. Print size cannot be greater than data size" << endl;
+        return;
+    }
 
     bool printAll;
     char response;
@@ -541,11 +565,7 @@ void group3()
     }
     
     cout << "Before sorting:" << endl;
-    if (printAll) {
-        printVector(data, dataSize);
-    } else {
-        printVector(data, printSize);
-    }
+    printVector(data, printSize);
 
     auto start = chrono::steady_clock::now(); // start measuring time
     insertionSort(data);
@@ -567,16 +587,23 @@ void group4()
     int dataSize, print_size;
     cout << "Enter size of data to be sorted: ";
     cin >> dataSize; 
+    if (dataSize <= 0){
+        cout << "False data size. Please provide a number greater than 0" << endl;
+        return;
+    }
 
     cout << "Enter the number of items to be printed before and after sorting: ";
-    cin >> print_size; 
+    cin >> print_size;
+    if (print_size > dataSize){
+        cout << "False print size. Print size cannot be greater than data size" << endl;
+        return;
+    }
 
     bool printAll;
     char response;
     cout << "Do you want to print the entire sorted data? (y/n): ";
     cin >> response; 
     
-
     if (response == 'y' || response == 'Y') { // not case sensitive
         printAll = true;
     } else {
@@ -591,15 +618,8 @@ void group4()
     }
 
     cout << "Before sorting: \n";
-    if(printAll){
-        for (int i = 0; i < dataSize; i++) {
-        cout << data[i] << " ";
-        }
-    }
-    else {
-        for (int i = 0; i < print_size; i++) {
-        cout << data[i] << " ";
-        }
+    for (int i = 0; i < print_size; i++) {
+    cout << data[i] << " ";
     }
     cout << endl;
 
@@ -628,6 +648,10 @@ void group5()
     int dataSize, printSize;
     cout << "Enter the size of data to be sorted: ";
     cin >> dataSize; 
+    if (dataSize <= 0){
+        cout << "False data size. Please provide a number greater than 0" << endl;
+        return;
+    }
     
     int choice1, choice2;
     cout << "Which two algorithms you want to compare?" << endl;
@@ -655,11 +679,4 @@ void group5()
     }
 
     compare_sort_algorithms(data, choice1, choice2);
-    
-    
-
-    // Add to your program one sorting algorithm of class n^2
-    // and one sorting algorithm of class n*log⁡( n ) (performance) not added before. 
-    // user selects which of two sorting algorithms are ran
-    // plot
 }
