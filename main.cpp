@@ -659,10 +659,10 @@ void group5()
     cout << "Your choices (seperate with space): ";
     
     cin >> choice1 >> choice2;
-    /*if (choice1 == choice2) {
+    if (choice1 == choice2) {
         cout << "Please choose two diffirent algorithms. Try again." << endl;
         return;
-    }*/
+    }
     if (choice1 > 4 || choice2 > 4){
         cout << "Invalid choice. Please try again." << endl;
         return;
