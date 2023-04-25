@@ -299,11 +299,8 @@ void mergeSort(vector<int> &arr, int left, int right)
     }
 }
 
-void compare_sort_algorithms(vector<int> &arr, int alg1, int alg2)
+void compare_sort_algorithms(vector<int> &arr, vector<int> &arr2, int alg1, int alg2)
 {
-   // copy data for second algorithm
-   vector<int> &arr2 = arr;
-
    int time1, time2, compare1, compare2;
    string algname1, algname2;
 
@@ -356,7 +353,7 @@ void compare_sort_algorithms(vector<int> &arr, int alg1, int alg2)
             bubblesort(arr2);
             auto end2 = chrono::steady_clock::now();
             time2 = chrono::duration_cast<chrono::microseconds>(end2 - start2).count();
-            compare2 = arr.size() * (arr.size() - 1) / 2;
+            compare2 = arr2.size() * (arr2.size() - 1) / 2;
         }
         break;
         case 2:{
@@ -662,10 +659,10 @@ void group5()
     cout << "Your choices (seperate with space): ";
     
     cin >> choice1 >> choice2;
-    if (choice1 == choice2) {
+    /*if (choice1 == choice2) {
         cout << "Please choose two diffirent algorithms. Try again." << endl;
         return;
-    }
+    }*/
     if (choice1 > 4 || choice2 > 4){
         cout << "Invalid choice. Please try again." << endl;
         return;
@@ -677,6 +674,7 @@ void group5()
     for (int i = 0; i < data.size(); i++) {
         data[i] = rand() % (10 * data.size()); // range of random integers is 10 x given size
     }
+    vector<int>data2 = data;
 
-    compare_sort_algorithms(data, choice1, choice2);
+    compare_sort_algorithms(data, data2, choice1, choice2);
 }
