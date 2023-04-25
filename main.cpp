@@ -9,12 +9,11 @@ using namespace std;
 
 enum
 {
-    keySuccess = 0,
     keyFailure = -1,
     funcFailure = 2,
 };
-    // function to measure time by calling it at start and end of 
-    // snipept of code you want to measure
+
+// function to measure time
 void getDuration(chrono::steady_clock::time_point start,
                     chrono::steady_clock::time_point end) 
 {
@@ -23,9 +22,10 @@ void getDuration(chrono::steady_clock::time_point start,
     cout << "Elapsed time: " << duration << " microseconds or " 
          << millisecs << " milliseconds (rounded)." << endl;
 }
+
 int searchFunction(int dataSize, int key, int searchType)
 {
-// generate data
+    // generate data
     vector<int> data(dataSize);
     for (int i = 0; i < dataSize; i++) {
         data[i] = 2*i + 1;
@@ -63,7 +63,7 @@ int searchFunction(int dataSize, int key, int searchType)
                 right = mid - 1;
             }
         }
-        return keyFailure;
+        return keyFailure; // key not found
         
     }
     return funcFailure;
@@ -88,7 +88,7 @@ int searchFunction(int dataSize, int key, int searchType, int& comparisions)
                 return i+1;
             }
         }
-        return keyFailure; // key not found
+        return keyFailure; 
     }
 
     // hop inside of binary search scope
@@ -117,10 +117,9 @@ int searchFunction(int dataSize, int key, int searchType, int& comparisions)
 }
 
 
-    // function for comparing search algorithms
 void compare_search_algorithms(int dataSize, int num_repetitions) 
 {
-    // Initialize random seed
+    // initialize random seed
     srand(time(nullptr));
 
     int totalSeqComparisons = 0;
@@ -128,7 +127,7 @@ void compare_search_algorithms(int dataSize, int num_repetitions)
 
     for (int i = 0; i < num_repetitions; i++) {
         
-        int key = rand() % dataSize + 1; // Generate random key
+        int key = rand() % dataSize + 1; // generate random key
 
         int seq_comparisons = 0;
         int bin_comparisons = 0;
@@ -157,9 +156,6 @@ void compare_search_algorithms(int dataSize, int num_repetitions)
         auto endBin = chrono::steady_clock::now();
         auto timeBin = chrono::duration_cast<chrono::microseconds>(endBin - startBin).count();
         
-      /*  int bin_index = binary_search(data, key);
-        int bin_comparisons = bin_index + 1; */
-        
         cout << "\nSearch #" << i+1 << " with key " << key << ":" << endl;
         cout << "--------------------------------------" << endl;
 
@@ -178,7 +174,7 @@ void compare_search_algorithms(int dataSize, int num_repetitions)
 
 
     // function to help print vector data types
-void printVector(const vector<int>& vec, int size) 
+void printVector(const vector<int> &vec, int size) 
 {
     for (int i = 0; i < size; ++i) {
         cout << vec[i] << " ";
@@ -189,39 +185,7 @@ void printVector(const vector<int>& vec, int size)
     cout << endl;
 }
 
-void sortWithInsertionSort(int dataSize, int printSize, bool printAll) 
-{
-    vector<int> data(dataSize);
-    srand(time(0));
-
-    for (int i = 0; i < dataSize; i++) {
-        data[i] = rand() % (10 * dataSize); // range of random integers is 10 x given size
-    }
-
-    cout << "Before sorting:" << endl;
-    if (printAll) {
-        printVector(data, dataSize);
-    } else {
-        printVector(data, printSize);
-    }
-
-    for (int i = 1; i < data.size(); ++i) {
-        int j = i;
-        while (j > 0 && data[j-1] > data[j]) {
-            swap(data[j], data[j-1]);
-            j--;
-        }
-    }
-
-    cout << "After sorting:" << endl;
-    if (printAll) {
-        printVector(data, dataSize);
-    } else {
-        printVector(data, printSize);
-    }
-}
-
-    // swap positions of two elements in an array
+    // swap positions of two elements in an array or vector
 void swap(int& a, int& b) 
 {
     int temp = a;
@@ -231,7 +195,7 @@ void swap(int& a, int& b)
 
     // partitions the array into two parts by pivot, elements that are
     // smaller than pivot go left and higher go right, then loop this
-int partition(int arr[], int low, int high) 
+int partition(vector<int> &arr, int low, int high) 
 {
     int pivot = arr[high];
     int i = low - 1;
@@ -246,7 +210,7 @@ int partition(int arr[], int low, int high)
     return i + 1;
 }
 
-void quicksort(int arr[], int low, int high) 
+void quicksort(vector<int> &arr, int low, int high) 
 {
     if (low < high) {
         int prt = partition(arr, low, high);
@@ -255,22 +219,208 @@ void quicksort(int arr[], int low, int high)
     }
 }
 
+void insertionSort(vector<int> &data) 
+{
+    for (int i = 1; i < data.size(); ++i) {
+        int j = i;
+        while (j > 0 && data[j-1] > data[j]) {
+            swap(data[j], data[j-1]);
+            j--;
+        }
+    }
+}
 
+void bubblesort(vector<int> &arr)
+{
+    int n = arr.size();
+    for (int i = 0; i < n-1; i++){
+        for (int j = 0; j < n-1-i; j++){
+            if (arr[j] > arr[j+1]){
+                swap(arr[j], arr[j+1]);
+            }
+        }
+    }
+}
+
+void merge(vector<int> &arr, int left, int mid, int right) 
+{
+    int i, j, k;
+    
+    int ArrLeft = mid - left + 1;
+    int ArrRight = right - mid;
+    // create temp arrays
+    vector<int> subVecLeft(ArrLeft);
+    vector<int> subVecRight(ArrRight);
+
+    // copy data to temp arrays
+    for (i = 0; i < ArrLeft; i++) {
+        subVecLeft[i] = arr[left + i];
+    }
+    for (j = 0; j < ArrRight; j++) {
+        subVecRight[j] = arr[mid + 1 + j];
+    }
+
+    // merge the temporary arrays back into arr[left..right]
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < ArrLeft && j < ArrRight) {
+        if (subVecLeft[i] <= subVecRight[j]) {
+            arr[k] = subVecLeft[i];
+            i++;
+        }
+        else {
+            arr[k] = subVecRight[j];
+            j++;
+        }
+        k++;
+    }
+    // copy the remaining elements of subVecLeft
+    while (i < ArrLeft) {
+        arr[k] = subVecLeft[i];
+        i++;
+        k++;
+    }
+    // copy the remaining elements of subVecRight
+    while (j < ArrRight) {
+        arr[k] = subVecRight[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int> &arr, int left, int right)
+{
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right); // merge sorted halves
+    }
+}
+
+void compare_sort_algorithms(vector<int> &arr, int alg1, int alg2)
+{
+   // copy data for second algorithm
+   vector<int> &arr2 = arr;
+
+   int time1, time2, compare1, compare2;
+   string algname1, algname2;
+
+    switch(alg1){
+        case 1:{
+            algname1 = "Insertion sort";
+            auto start1 = chrono::steady_clock::now();
+            bubblesort(arr);
+            auto end1 = chrono::steady_clock::now();
+            time1 = chrono::duration_cast<chrono::microseconds>(end1 - start1).count();
+            compare1 = arr.size() * (arr.size() - 1) / 2;
+        }
+        break;
+        case 2:{
+            algname1 = "Quicksort";
+            auto start1 = chrono::steady_clock::now();
+            quicksort(arr, 0, arr.size() - 1);
+            auto end1 = chrono::steady_clock::now();
+            time1 = chrono::duration_cast<chrono::microseconds>(end1 - start1).count();
+            compare1 = arr.size() * (arr.size() - 1) / 2;
+        }
+        break;   
+        case 3:{
+            algname1 = "Bubblesort";
+            auto start1 = chrono::steady_clock::now();
+            bubblesort(arr);
+            auto end1 = chrono::steady_clock::now();
+            time1 = chrono::duration_cast<chrono::microseconds>(end1 - start1).count();
+            compare1 = arr.size() * (arr.size() - 1) / 2;
+        }
+        break;
+        case 4:{
+            algname1 = "Merge sort";
+            auto start1 = chrono::steady_clock::now();
+            mergeSort(arr, 0, arr.size() - 1);
+            auto end1 = chrono::steady_clock::now();
+            time1 = chrono::duration_cast<chrono::microseconds>(end1 - start1).count();
+            compare1 = arr.size() * log2(arr.size());
+        }
+        break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+            return;
+    }
+
+    switch(alg2){
+        case 1:{
+            algname2 = "Insertion sort";
+            auto start2 = chrono::steady_clock::now();
+            bubblesort(arr2);
+            auto end2 = chrono::steady_clock::now();
+            time2 = chrono::duration_cast<chrono::microseconds>(end2 - start2).count();
+            compare2 = arr.size() * (arr.size() - 1) / 2;
+        }
+        break;
+        case 2:{
+            algname2 = "Quicksort";
+            auto start2 = chrono::steady_clock::now();
+            quicksort(arr2, 0, arr2.size() - 1);
+            auto end2 = chrono::steady_clock::now();
+            time2 = chrono::duration_cast<chrono::microseconds>(end2 - start2).count();
+            compare2 = arr2.size() * (arr2.size() - 1) / 2;
+        }
+        break;   
+        case 3:{
+            algname2 = "Bubblesort";
+            auto start2 = chrono::steady_clock::now();
+            bubblesort(arr2);
+            auto end2 = chrono::steady_clock::now();
+            time2 = chrono::duration_cast<chrono::microseconds>(end2 - start2).count();
+            compare2 = arr2.size() * (arr2.size() - 1) / 2;
+        }
+        break;
+        case 4:{
+            algname2 = "Merge sort";
+            auto start2 = chrono::steady_clock::now();
+            mergeSort(arr2, 0, arr2.size() - 1);
+            auto end2 = chrono::steady_clock::now();
+            time2 = chrono::duration_cast<chrono::microseconds>(end2 - start2).count();
+            compare2 = arr2.size() * log2(arr2.size());
+        }
+        break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+            return;
+    }
+
+        //print compare statistics
+        cout << "--------------------------------------" << endl;
+
+        cout << "Data amount: " << arr.size() << endl;
+        cout << algname1 << ": " << endl;
+        cout << "Time elapsed: " << time1 << " microseconds or"
+             << time1/1000 << "milliseconds" << endl;
+        cout << "Comparisions: " << compare1 << endl;
+
+        cout << algname2 << ": " << endl;
+        cout << "Time elapsed: " << time2 << " microseconds or"
+             << time2/1000 << "milliseconds" << endl;
+        cout << "Comparisions: " << compare2 << endl;
+
+}
 // function introductions
 void group1();  // Sequential search
-void group2();  // Binary search
+void group2();  // Binary search and comparision
 void group3();  // Insertion sort
 void group4();  // Quicksort
-void group5();  //
+void group5();  // Bubblesort, merge sort and comparision
 
 int main() 
 {
     int choice;
         cout << "1. Sequential search" << endl;
-        cout << "2. Binary search" << endl;
+        cout << "2. Binary search and comparision" << endl;
         cout << "3. Insertion sort" << endl;
         cout << "4. Quicksort" << endl;
-        cout << "5. " << endl;
+        cout << "5. Bubblesort, merge sort and comparision" << endl;
         cout << "6. Quit the program" << endl;
         cout << "Your choice: ";
 
@@ -301,7 +451,8 @@ int main()
     return 0;
 }
 
-void group1()
+// Sequential search
+void group1() 
 {
     int dataSize, key;
     cout << "Enter the size of data to be searched: ";
@@ -314,7 +465,6 @@ void group1()
 
     const int searchType = 1;
     int result = searchFunction(dataSize, key, searchType);
-    cout << "debug:result: " << result << endl;
     if (result != keyFailure)
     {
         cout << "Success! The key is: " << key
@@ -327,6 +477,7 @@ void group1()
     getDuration(start, end);
 }
 
+ // Binary search and comparision
 void group2()
 {
     int dataSize, key;
@@ -360,13 +511,13 @@ void group2()
     }    
 }
 
-void group3()
+// Insertion sort
+void group3() 
 {
     int dataSize, printSize;
     cout << "Enter the size of data to be sorted: ";
     cin >> dataSize; 
     
-
     cout << "Enter the number of items to be printed before and after sorting: ";
     cin >> printSize; 
 
@@ -381,17 +532,41 @@ void group3()
     } else {
         printAll = false;
     }
+
+    //generate data
+    vector<int> data(dataSize);
+    srand(time(0));
+    for (int i = 0; i < data.size(); i++) {
+        data[i] = rand() % (10 * data.size()); // range of random integers is 10 x given size
+    }
+    
+    cout << "Before sorting:" << endl;
+    if (printAll) {
+        printVector(data, dataSize);
+    } else {
+        printVector(data, printSize);
+    }
+
     auto start = chrono::steady_clock::now(); // start measuring time
-    sortWithInsertionSort(dataSize, printSize, printAll);
+    insertionSort(data);
     auto end = chrono::steady_clock::now(); // stop measuring time
+
+    cout << "After sorting:" << endl;
+    if (printAll) {
+        printVector(data, dataSize);
+    } else {
+        printVector(data, printSize);
+    }
+
     getDuration(start, end); // calculate and print time of algorithm
 }
 
-void group4()
+// Quicksort
+void group4() 
 {
-    int size, print_size;
+    int dataSize, print_size;
     cout << "Enter size of data to be sorted: ";
-    cin >> size; 
+    cin >> dataSize; 
 
     cout << "Enter the number of items to be printed before and after sorting: ";
     cin >> print_size; 
@@ -408,46 +583,83 @@ void group4()
         printAll = false;
     }
 
-    int* arr = new int[size];
-    srand(time(0)); // time functions as seed for srand
-    for (int i = 0; i < size; i++) {
-        arr[i] = rand() % (10 * size); // range of random integers is 10 x given size
+    //generate data
+    vector<int> data(dataSize);
+    srand(time(0));
+    for (int i = 0; i < data.size(); i++) {
+        data[i] = rand() % (10 * data.size()); // range of random integers is 10 x given size
     }
 
     cout << "Before sorting: \n";
     if(printAll){
-        for (int i = 0; i < size; i++) {
-        cout << arr[i] << " ";
+        for (int i = 0; i < dataSize; i++) {
+        cout << data[i] << " ";
         }
     }
     else {
         for (int i = 0; i < print_size; i++) {
-        cout << arr[i] << " ";
+        cout << data[i] << " ";
         }
     }
     cout << endl;
 
     auto start = chrono::steady_clock::now(); // start measuring time
-    quicksort(arr, 0, size - 1);
+    quicksort(data, 0, dataSize - 1);
     auto end = chrono::steady_clock::now(); // stop measuring time
 
     cout << "\nAfter sorting: \n";
     if(printAll){
-        for (int i = 0; i < size; i++) {
-        cout << arr[i] << " ";
+        for (int i = 0; i < dataSize; i++) {
+        cout << data[i] << " ";
         }
     }
     else {
         for (int i = 0; i < print_size; i++) {
-        cout << arr[i] << " ";
+        cout << data[i] << " ";
         }
     }
     cout << endl;
     getDuration(start, end); // calculate and print time of algorithm
-
-    delete[] arr;
 }
+
+// Bubblesort, merge sort and comparision
 void group5()
 {
+    int dataSize, printSize;
+    cout << "Enter the size of data to be sorted: ";
+    cin >> dataSize; 
+    
+    int choice1, choice2;
+    cout << "Which two algorithms you want to compare?" << endl;
+    cout << "1. Insertion sort" << endl;
+    cout << "2. Quicksort" << endl;
+    cout << "3. Bubblesort" << endl;
+    cout << "4. Merge sort" << endl;
+    cout << "Your choices (seperate with space): ";
+    
+    cin >> choice1 >> choice2;
+    if (choice1 == choice2) {
+        cout << "Please choose two diffirent algorithms. Try again." << endl;
+        return;
+    }
+    if (choice1 > 4 || choice2 > 4){
+        cout << "Invalid choice. Please try again." << endl;
+        return;
+    }
 
+    //generate data
+    vector<int> data(dataSize);
+    srand(time(0));
+    for (int i = 0; i < data.size(); i++) {
+        data[i] = rand() % (10 * data.size()); // range of random integers is 10 x given size
+    }
+
+    compare_sort_algorithms(data, choice1, choice2);
+    
+    
+
+    // Add to your program one sorting algorithm of class n^2
+    // and one sorting algorithm of class n*log⁡( n ) (performance) not added before. 
+    // user selects which of two sorting algorithms are ran
+    // plot
 }
