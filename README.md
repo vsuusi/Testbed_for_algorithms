@@ -1,5 +1,5 @@
 # Testped_for_algorithms
-A menu driven test bed program for searching and sorting algorithms.
+A menu driven test bed program for comparing searching and sorting algorithms.
 Program features are divided into five groups; groups 1 and 2 involve searching algorithms and groups 3 – 5 involve sorting algorithms.
 
 The groups:
